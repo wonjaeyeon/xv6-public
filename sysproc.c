@@ -89,3 +89,22 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+// added by wonjaeyeon
+int
+sys_forknexec(void)
+{
+    char *path, **args;
+    if(argstr(0, &path) < 0 || argptr(1, (void*)&args, sizeof(args)) < 0)
+        return -1;
+
+    int pid = fork();
+    if(pid == 0) {  // child process
+        if(exec(path, args) < 0)
+            return -2;  // exec failed
+    } else if(pid < 0) {
+        return -2;  // fork failed
+    }
+
+    return pid;  // return the child's pid
+}
