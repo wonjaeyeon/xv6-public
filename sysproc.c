@@ -82,7 +82,14 @@ sys_uptime(void) {
     return xticks;
 }
 
+
+// added by wonjaeyeon
 int
-sys_forknexec(const char *path, const char **args) {
+sys_forknexec(void) {
+    char *path;
+    const char **args;
+
+    if (argstr(0, &path) < 0 || argptr(1, (void *) &args, sizeof(args)) < 0)
+        return -1;
     return forknexec(path, args);
 }
