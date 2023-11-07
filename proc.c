@@ -89,6 +89,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->priority = 5; // Initialize priority to 5 here
 
   release(&ptable.lock);
 
@@ -139,6 +140,8 @@ userinit(void)
   p->tf->eflags = FL_IF;
   p->tf->esp = PGSIZE;
   p->tf->eip = 0;  // beginning of initcode.S
+  p->priority = 5; // Set default priority to 5
+
 
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
@@ -218,6 +221,9 @@ fork(void)
 
   pid = np->pid;
 
+  //Copy the priority from the parent process
+  np->priority = curproc->priority;
+
   acquire(&ptable.lock);
 
   np->state = RUNNABLE;
@@ -227,138 +233,6 @@ fork(void)
   return pid;
 }
 
-
-//int
-//forknexec(const char *path, const char **args)
-//{
-//    int i, off, argc;
-//    uint sz, sp, ustack[3+MAXARG+1];
-//    struct elfhdr elf;
-//    struct proghdr ph;
-//    pde_t *pgdir;
-//    struct inode *ip;
-//    struct proc *np;
-//    struct proc *curproc = myproc();
-//    char *pathv = (char*)path;
-//
-//    // Allocate process.
-//    if((np = allocproc()) == 0){
-//        return -1;
-//    }
-//
-//    // Copy process state from proc.
-//    if((np->pgdir = copyuvm(curproc->pgdir, curproc->sz)) == 0){
-//        kfree(np->kstack);
-//        np->kstack = 0;
-//        np->state = UNUSED;
-//        return -1;
-//    }
-//    np->sz = curproc->sz;
-//    np->parent = curproc;
-//    *np->tf = *curproc->tf;
-//
-//    // Clear %eax so that fork returns 0 in the child.
-//    np->tf->eax = 0;
-//
-//    for(i = 0; i < NOFILE; i++)
-//        if(curproc->ofile[i])
-//            np->ofile[i] = filedup(curproc->ofile[i]);
-//    np->cwd = idup(curproc->cwd);
-//
-//    // Load the program.
-//    begin_op();
-//
-//    if((ip = namei(pathv)) == 0){
-//        end_op();
-//        return -2; // Error loading the program.
-//    }
-//    ilock(ip);
-//    pgdir = 0;
-//
-//    // Check ELF header
-//    if(readi(ip, (char*)&elf, 0, sizeof(elf)) != sizeof(elf))
-//        goto bad;
-//    if(elf.magic != ELF_MAGIC)
-//        goto bad;
-//
-//    if((pgdir = setupkvm()) == 0)
-//        goto bad;
-//
-//    // Load program into memory.
-//    sz = 0;
-//    for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){
-//        if(readi(ip, (char*)&ph, off, sizeof(ph)) != sizeof(ph))
-//            goto bad;
-//        if(ph.type != ELF_PROG_LOAD)
-//            continue;
-//        if(ph.memsz < ph.filesz)
-//            goto bad;
-//        if(ph.vaddr + ph.memsz < ph.vaddr)
-//            goto bad;
-//        if((sz = allocuvm(pgdir, sz, ph.vaddr + ph.memsz)) == 0)
-//            goto bad;
-//        if(ph.vaddr % PGSIZE != 0)
-//            goto bad;
-//        if(loaduvm(pgdir, (char*)ph.vaddr, ip, ph.off, ph.filesz) < 0)
-//            goto bad;
-//    }
-//    iunlockput(ip);
-//    end_op();
-//    ip = 0;
-//
-//    // Allocate two pages at the next page boundary.
-//    sz = PGROUNDUP(sz);
-//    if((sz = allocuvm(pgdir, sz, sz + 2*PGSIZE)) == 0)
-//        goto bad;
-//    clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
-//    sp = sz;
-//
-//    // Push argument strings, prepare rest of stack in ustack.
-//    for(argc = 0; args[argc]; argc++) {
-//        if(argc >= MAXARG)
-//            goto bad;
-//        sp = (sp - (strlen(args[argc]) + 1)) & ~3;
-//        if(copyout(pgdir, sp, args[argc], strlen(args[argc]) + 1) < 0)
-//            goto bad;
-//        ustack[3+argc] = sp;
-//    }
-//    ustack[3+argc] = 0;
-//
-//    ustack[0] = 0xffffffff;  // fake return PC
-//    ustack[1] = argc;
-//    ustack[2] = sp - (argc+1)*4;  // argv pointer
-//
-//    sp -= (3+argc+1) * 4;
-//    if(copyout(pgdir, sp, ustack, (3+argc+1)*4) < 0)
-//        goto bad;
-//
-//    // Save program name for debugging.
-//    safestrcpy(np->name, path, sizeof(np->name));
-//
-//    // Commit to the user image.
-//    curproc->pgdir = pgdir;
-//    curproc->sz = sz;
-//    curproc->tf->eip = elf.entry;  // main
-//    curproc->tf->esp = sp;
-//    switchuvm(curproc);
-//
-//    acquire(&ptable.lock);
-//    np->state = RUNNABLE;
-//    release(&ptable.lock);
-//
-//    return np->pid;
-//
-//    bad:
-//    if(pgdir)
-//        freevm(pgdir);
-//    if(ip){
-//        iunlockput(ip);
-//        end_op();
-//    }
-//    return -2;
-//}
-
-// Create a new process copying p as the parent. + n execs
 int
 forknexec(const char *path, const char **args)
 {
@@ -500,52 +374,6 @@ forknexec(const char *path, const char **args)
     return np->pid;
 }
 
-//// Create a new process copying p as the parent. + n execs
-//int
-//forknexec(const char *path, const char **args)
-//{
-//    int i, pid;
-//    struct proc *np;
-//    struct proc *curproc = myproc();
-//
-//    // Allocate process.
-//
-//    if((np = allocproc()) == 0){
-//        return -1;
-//    }
-//
-//    // Copy process state from proc.
-//    if((np->pgdir = copyuvm(curproc->pgdir, curproc->sz)) == 0){
-//        kfree(np->kstack);
-//        np->kstack = 0;
-//        np->state = UNUSED;
-//        return -1;
-//    }
-//    np->sz = curproc->sz;
-//    np->parent = curproc;
-//    *np->tf = *curproc->tf;
-//
-//    // Clear %eax so that fork returns 0 in the child.
-//    np->tf->eax = 0;
-//
-//    for(i = 0; i < NOFILE; i++)
-//        if(curproc->ofile[i])
-//            np->ofile[i] = filedup(curproc->ofile[i]);
-//    np->cwd = idup(curproc->cwd);
-//
-//    safestrcpy(np->name, curproc->name, sizeof(curproc->name));
-//
-//    pid = np->pid;
-//
-//    acquire(&ptable.lock);
-//
-//    np->state = RUNNABLE;
-//
-//    release(&ptable.lock);
-//
-//    return pid;
-//}
-
 // Exit the current process.  Does not return.
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.
@@ -650,7 +478,7 @@ scheduler(void)
   struct proc *p;
   struct cpu *c = mycpu();
   c->proc = 0;
-  
+
   for(;;){
     // Enable interrupts on this processor.
     sti();
@@ -679,6 +507,51 @@ scheduler(void)
 
   }
 }
+//// In proc.c
+//void scheduler(void) {
+//    struct proc *p;
+//    struct cpu *c = mycpu();
+//    struct proc *highest_priority_proc;
+//    c->proc = 0;
+//    int highest_priority;
+//
+//
+//    for(;;){
+//        // Enable interrupts on this processor.
+//        sti();
+//
+//        // Loop over process table looking for process to run.
+//        acquire(&ptable.lock);
+//        highest_priority_proc = 0;
+//        highest_priority = 11; // Lower than the lowest priority
+//
+//        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+//            if(p->state != RUNNABLE)
+//                continue;
+//
+//            // Check if the process has the highest priority so far
+//            if(p->priority < highest_priority) {
+//                highest_priority = p->priority;
+//                highest_priority_proc = p;
+//            }
+//        }
+//
+//        if(highest_priority_proc != 0) {
+//            // Run the highest priority process found
+//            highest_priority_proc->state = RUNNING;
+//            switchuvm(highest_priority_proc);
+//            swtch(&(c->scheduler), highest_priority_proc->context);
+//            switchkvm();
+//
+//            // Process is done running for now.
+//            // It should have changed its p->state before coming back.
+//            c->proc = 0;
+//        }
+//
+//        release(&ptable.lock);
+//    }
+//}
+
 
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state. Saves and restores
@@ -856,4 +729,37 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+
+int set_proc_priority(int pid, int priority) {
+    struct proc *p;
+
+    if(priority < 1 || priority > 10)
+        return -1;
+
+    acquire(&ptable.lock);
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        if(p->pid == pid) {
+            p->priority = priority;
+            release(&ptable.lock);
+            return 0;
+        }
+    }
+    release(&ptable.lock);
+    return -1;
+}
+
+int get_proc_priority(int pid) {
+    struct proc *p;
+    int priority = -1;
+
+    acquire(&ptable.lock);
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+        if(p->pid == pid) {
+            priority = p->priority;
+            break;
+        }
+    }
+    release(&ptable.lock);
+    return priority;
 }
