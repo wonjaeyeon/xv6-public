@@ -121,6 +121,12 @@ int             wait(void);
 void            wakeup(void*);
 void            yield(void);
 int             forknexec(const char *path, const char **args);
+int             set_proc_priority(int pid, int priority);
+int             get_proc_priority(int pid);
+int             cps(void);
+int             ChangePriority(int pid, int priority);
+
+
 
 // swtch.S
 void            swtch(struct context**, struct context*);
