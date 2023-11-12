@@ -580,104 +580,89 @@ wait(void) {
 //    }
 //}
 
-//void
-//scheduler(void)
-//{
-//    struct proc *p;
-//    struct proc *p1;
-//    struct cpu *c = mycpu();
-//    c->proc = 0;
-//
-//    for(;;){
-//        // Enable interrupts on this processor.
-//        sti();
-//
-//        struct proc *highP =  0;
-//        // Loop over process table looking for process to run.
-//        acquire(&ptable.lock);
-//        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-//            if(p->state != RUNNABLE)
-//                continue;
-//
-//            highP = p;
-//            // Choose one with highest priority
-//            for(p1=ptable.proc; p1<&ptable.proc[NPROC];p1++){
-//                if(p1->state != RUNNABLE)
-//                    continue;
-//                if(highP->priority > p1->priority) // larger value, lower priority
-//                    highP = p1;
-//            }
-//            p = highP;
-//            //   proc = p;
-//
-//            // Switch to chosen process.  It is the process's job
-//            // to release ptable.lock and then reacquire it
-//            // before jumping back to us.
-//            c->proc = p;
-//            switchuvm(p);
-//            p->state = RUNNING;
-//
-//            /*
-//            Save current registers int c->scheduler which points to a struct context
-//            Load registers from process's context
-//
-//              struct context
-//              {
-//                  uint edi;
-//                  uint esi;
-//                  uint ebx;
-//                  uint ebp;
-//                  uint eip;
-//              };
-//          */
-//
-//            swtch(&(c->scheduler), p->context);
-//            switchkvm();
-//
-//            // Process is done running for now.
-//            // It should have changed its p->state before coming back.
-//            c->proc = 0;
-//        }
-//        release(&ptable.lock);
-//
-//    }
-//}
-
-void scheduler(void) {
+void
+scheduler(void)
+{
     struct proc *p;
+    struct proc *p1;
     struct cpu *c = mycpu();
     c->proc = 0;
 
-    for (;;) {
+    for(;;){
+        // Enable interrupts on this processor.
         sti();
 
-        struct proc *highP = 0;
+        struct proc *highP =  0;
+        // Loop over process table looking for process to run.
         acquire(&ptable.lock);
-        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-            if (p->state != RUNNABLE)
+        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+            if(p->state != RUNNABLE)
                 continue;
 
-            if (highP == 0 || p->priority < highP->priority ||
-                (p->priority == highP->priority && p->run_count < highP->run_count)) {
-                highP = p;
+            highP = p;
+            // Choose one with highest priority
+            for(p1=ptable.proc; p1<&ptable.proc[NPROC];p1++){
+                if(p1->state != RUNNABLE)
+                    continue;
+                if(highP->priority > p1->priority) // larger value, lower priority
+                    highP = p1;
             }
-        }
-
-        if (highP != 0) {
             p = highP;
-            p->run_count++;  // 실행 횟수 증가
 
+            // Switch to chosen process.  It is the process's job
+            // to release ptable.lock and then reacquire it
+            // before jumping back to us.
             c->proc = p;
             switchuvm(p);
             p->state = RUNNING;
+
             swtch(&(c->scheduler), p->context);
             switchkvm();
 
+            // Process is done running for now.
+            // It should have changed its p->state before coming back.
             c->proc = 0;
         }
         release(&ptable.lock);
+
     }
 }
+
+//void scheduler(void) {
+//    struct proc *p;
+//    struct cpu *c = mycpu();
+//    c->proc = 0;
+//
+//    for (;;) {
+//        sti();
+//
+//        struct proc *highP = 0;
+//        acquire(&ptable.lock);
+//        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+//            if (p->state != RUNNABLE)
+//                continue;
+//
+//            if (highP == 0 || p->priority < highP->priority ||
+//                (p->priority == highP->priority && p->run_count < highP->run_count)) {
+//                highP = p;
+//            }
+//        }
+//
+//        if (highP != 0) {
+//            p = highP;
+//            p->run_count++;  // 실행 횟수 증가
+//
+//            c->proc = p;
+//            switchuvm(p);
+//            p->state = RUNNING;
+//            swtch(&(c->scheduler), p->context);
+//            switchkvm();
+//
+//            c->proc = 0;
+//        }
+//        release(&ptable.lock);
+//    }
+//}
 
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state. Saves and restores
