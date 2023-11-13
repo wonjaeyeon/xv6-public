@@ -850,7 +850,7 @@ set_proc_priority(int pid, int priority) {
         }
     }
     release(&ptable.lock);
-    return -1;
+    return 0;
 }
 
 int
