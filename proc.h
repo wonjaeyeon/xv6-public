@@ -53,7 +53,6 @@ struct proc {
     char name[16];               // Process name (debugging)
     int priority;                // Add priority
     int run_count;               // Add run_count
-    int last_run;                // Tick count when the process was last run
 };
 
 // Process memory is laid out contiguously, low addresses first:

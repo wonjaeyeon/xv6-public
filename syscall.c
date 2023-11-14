@@ -135,7 +135,6 @@ static int (*syscalls[])(void) = {
 [SYS_set_proc_priority] sys_set_proc_priority,
 [SYS_get_proc_priority] sys_get_proc_priority,
 [SYS_cps]     sys_cps,
-[SYS_ChangePriority] sys_ChangePriority,
 };
 
 void

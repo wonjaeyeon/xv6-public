@@ -89,7 +89,7 @@ allocproc(void) {
     found:
     p->state = EMBRYO;
     p->pid = nextpid++;
-    p->priority = 4; // Initialize priority to 5 here
+    p->priority = 5; // Initialize priority to 5 here
     p->run_count = 0; // Initialize run_count to 0 here
 
     release(&ptable.lock);
@@ -142,7 +142,7 @@ userinit(void) {
     p->tf->esp = PGSIZE;
     p->tf->eip = 0;  // beginning of initcode.S
     p->priority = 5; // Set default priority to 5
-    p->run_count = 10; // Set default run_count to 0
+    p->run_count = 0; // Set default run_count to 0
 
 
     safestrcpy(p->name, "initcode", sizeof(p->name));
@@ -469,6 +469,7 @@ wait(void) {
 //  - swtch to start running that process
 //  - eventually that process transfers control
 //      via swtch back to the scheduler.
+// 1. The Round Robin Scheduler - already implemented
 //void
 //scheduler(void)
 //{
@@ -505,81 +506,57 @@ wait(void) {
 //  }
 //}
 
-// In proc.c
+// 2-1. The Preemptive Priority Scheduler
 //void
-//scheduler(void) {
+//scheduler(void)
+//{
 //    struct proc *p;
+//    struct proc *p1;
 //    struct cpu *c = mycpu();
-//    struct proc *highest_priority_proc;
 //    c->proc = 0;
-//    int highest_priority;
-//
 //
 //    for(;;){
 //        // Enable interrupts on this processor.
 //        sti();
 //
+//        struct proc *highP =  0;
 //        // Loop over process table looking for process to run.
 //        acquire(&ptable.lock);
-//        highest_priority_proc = 0;
-//        highest_priority = 11; // Lower than the lowest priority
-//
 //        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 //            if(p->state != RUNNABLE)
 //                continue;
 //
-//            // Check if the process has the highest priority so far
-//            if(p->priority < highest_priority) {
-//                highest_priority = p->priority;
-//                highest_priority_proc = p;
+//            highP = p;
+//            // Choose one with highest priority
+//            for(p1=ptable.proc; p1<&ptable.proc[NPROC];p1++){
+//                if(p1->state != RUNNABLE)
+//                    continue;
+//                if(highP->priority > p1->priority) // larger value, lower priority
+//                    highP = p1;
 //            }
-//        }
+//            p = highP;
 //
-//        if(highest_priority_proc != 0) {
-//            // Run the highest priority process found
-//            highest_priority_proc->state = RUNNING;
-//            switchuvm(highest_priority_proc);
-//            swtch(&(c->scheduler), highest_priority_proc->context);
+//            // Switch to chosen process.  It is the process's job
+//            // to release ptable.lock and then reacquire it
+//            // before jumping back to us.
+//            c->proc = p;
+//            switchuvm(p);
+//            p->state = RUNNING;
+//
+//            swtch(&(c->scheduler), p->context);
 //            switchkvm();
 //
 //            // Process is done running for now.
 //            // It should have changed its p->state before coming back.
 //            c->proc = 0;
 //        }
-//
 //        release(&ptable.lock);
+//
 //    }
 //}
 
-//void scheduler(void) {
-//    struct proc *p;
-//    struct cpu *cpu = mycpu();
-//    struct proc *highest_priority_proc = NULL;
-//
-//    for(;;) {
-//        sti();
-//        acquire(&ptable.lock);
-//        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-//            if(p->state != RUNNABLE)
-//                continue;
-//
-//            if (highest_priority_proc == NULL || p->priority < highest_priority_proc->priority) {
-//                highest_priority_proc = p;
-//            }
-//        }
-//
-//        if (highest_priority_proc != NULL) {
-//            p = highest_priority_proc;
-//            // Switch to chosen process
-//            switchuvm(p);
-//            p->state = RUNNING;
-//            swtch(&cpu->scheduler, p->context);
-//            switchkvm();
-//        }
-//        release(&ptable.lock);
-//    }
-//}
 
+// 2-2. The Preemptive Priority Scheduler - added run_count logic
 //void
 //scheduler(void)
 //{
@@ -630,6 +607,7 @@ wait(void) {
 //    }
 //}
 
+// 3. The Preemptive Priority Scheduler that prevents starvation
 void scheduler(void) {
     struct proc *p;
     struct cpu *c = mycpu();
@@ -687,66 +665,6 @@ void scheduler(void) {
     }
 }
 
-
-//void scheduler(void) {
-//    struct proc *p;
-//    struct cpu *c = mycpu();
-//    c->proc = 0;
-//
-//    for (;;) {
-//        sti();
-//
-//        struct proc *highP = 0;
-//        struct proc *starvedP = 0;
-//        acquire(&ptable.lock);
-//
-//        // Find the most starved process
-//        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-//            if (p->state != RUNNABLE && strncmp(p->name, "ptest", 5) != 0)
-//                continue;
-//
-//            if (!starvedP || p->run_count < starvedP->run_count) {
-//                starvedP = p;
-//            }
-//        }
-//
-//        // If a starved process is found, boost its priority temporarily
-//        if (starvedP && starvedP->state == RUNNABLE && strncmp(p->name, "ptest", 5) != 0) {
-//            starvedP->priority = (starvedP->priority)-1; // Temporarily set highest priority
-//            if (starvedP->priority < 2) {
-//                starvedP->priority = 2;
-//            }
-//        }
-//
-//        // Normal priority scheduling
-//        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-//            if (p->state != RUNNABLE)
-//                continue;
-//
-//            if (!highP || p->priority < highP->priority) {
-//                highP = p;
-//            }
-//        }
-//
-//        if (highP) {
-//            highP->run_count++;
-//            c->proc = highP;
-//            switchuvm(highP);
-//            highP->state = RUNNING;
-//            swtch(&(c->scheduler), highP->context);
-//            switchkvm();
-//
-//            c->proc = 0;
-//
-//            // Reset the priority of the starved process after running
-//            if (starvedP) {
-//                starvedP->priority = 6; // Reset to initialized priority
-//            }
-//        }
-//
-//        release(&ptable.lock);
-//    }
-//}
 
 
 
@@ -979,21 +897,4 @@ cps() {
     release(&ptable.lock);
 
     return 22;
-}
-
-// Change priority
-int
-ChangePriority(int pid, int priority) {
-    struct proc *p;
-
-    acquire(&ptable.lock);
-    for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
-        if (p->pid == pid) {
-            p->priority = priority;
-            break;
-        }
-    }
-    release(&ptable.lock);
-
-    return pid;
 }

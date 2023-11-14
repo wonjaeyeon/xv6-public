@@ -124,7 +124,6 @@ int             forknexec(const char *path, const char **args);
 int             set_proc_priority(int pid, int priority);
 int             get_proc_priority(int pid);
 int             cps(void);
-int             ChangePriority(int pid, int priority);
 
 
 
