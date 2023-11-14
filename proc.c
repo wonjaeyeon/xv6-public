@@ -580,53 +580,113 @@ wait(void) {
 //    }
 //}
 
-void
-scheduler(void)
-{
+//void
+//scheduler(void)
+//{
+//    struct proc *p;
+//    struct proc *p1;
+//    struct cpu *c = mycpu();
+//    c->proc = 0;
+//
+//    for(;;){
+//        // Enable interrupts on this processor.
+//        sti();
+//
+//        struct proc *highP =  0;
+//        // Loop over process table looking for process to run.
+//        acquire(&ptable.lock);
+//        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+//            if(p->state != RUNNABLE)
+//                continue;
+//
+//            highP = p;
+//            // Choose one with highest priority
+//            for(p1=ptable.proc; p1<&ptable.proc[NPROC];p1++){
+//                if(p1->state != RUNNABLE)
+//                    continue;
+//                if(highP->priority > p1->priority) // larger value, lower priority
+//                    highP = p1;
+//            }
+//            p = highP;
+//
+//            // Switch to chosen process.  It is the process's job
+//            // to release ptable.lock and then reacquire it
+//            // before jumping back to us.
+//            // add run_count logic here
+//            p->run_count++;
+//            c->proc = p;
+//            switchuvm(p);
+//            p->state = RUNNING;
+//
+//            swtch(&(c->scheduler), p->context);
+//            switchkvm();
+//
+//            // Process is done running for now.
+//            // It should have changed its p->state before coming back.
+//            c->proc = 0;
+//        }
+//        release(&ptable.lock);
+//
+//    }
+//}
+
+void scheduler(void) {
     struct proc *p;
-    struct proc *p1;
     struct cpu *c = mycpu();
     c->proc = 0;
 
-    for(;;){
-        // Enable interrupts on this processor.
+    for (;;) {
         sti();
 
-        struct proc *highP =  0;
-        // Loop over process table looking for process to run.
+        struct proc *highP = 0;
+        struct proc *starvedP = 0;
         acquire(&ptable.lock);
-        for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-            if(p->state != RUNNABLE)
+
+        // Find the most starved process
+        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+            if (p->state != RUNNABLE)
                 continue;
 
-            highP = p;
-            // Choose one with highest priority
-            for(p1=ptable.proc; p1<&ptable.proc[NPROC];p1++){
-                if(p1->state != RUNNABLE)
-                    continue;
-                if(highP->priority > p1->priority) // larger value, lower priority
-                    highP = p1;
+            if (!starvedP || p->run_count < starvedP->run_count) {
+                starvedP = p;
             }
-            p = highP;
+        }
 
-            // Switch to chosen process.  It is the process's job
-            // to release ptable.lock and then reacquire it
-            // before jumping back to us.
-            c->proc = p;
-            switchuvm(p);
-            p->state = RUNNING;
+        // If a starved process is found, boost its priority temporarily
+        if (starvedP) {
+            starvedP->priority = 1; // Temporarily set highest priority
+        }
 
-            swtch(&(c->scheduler), p->context);
+        // Normal priority scheduling
+        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+            if (p->state != RUNNABLE)
+                continue;
+
+            if (!highP || p->priority < highP->priority) {
+                highP = p;
+            }
+        }
+
+        if (highP) {
+            highP->run_count++;
+            c->proc = highP;
+            switchuvm(highP);
+            highP->state = RUNNING;
+            swtch(&(c->scheduler), highP->context);
             switchkvm();
 
-            // Process is done running for now.
-            // It should have changed its p->state before coming back.
             c->proc = 0;
-        }
-        release(&ptable.lock);
 
+            // Reset the priority of the starved process after running
+            if (starvedP) {
+                starvedP->priority = 10; // Reset to lowest priority
+            }
+        }
+
+        release(&ptable.lock);
     }
 }
+
 
 //void scheduler(void) {
 //    struct proc *p;
@@ -637,32 +697,58 @@ scheduler(void)
 //        sti();
 //
 //        struct proc *highP = 0;
+//        struct proc *starvedP = 0;
 //        acquire(&ptable.lock);
+//
+//        // Find the most starved process
+//        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+//            if (p->state != RUNNABLE && strncmp(p->name, "ptest", 5) != 0)
+//                continue;
+//
+//            if (!starvedP || p->run_count < starvedP->run_count) {
+//                starvedP = p;
+//            }
+//        }
+//
+//        // If a starved process is found, boost its priority temporarily
+//        if (starvedP && starvedP->state == RUNNABLE && strncmp(p->name, "ptest", 5) != 0) {
+//            starvedP->priority = (starvedP->priority)-1; // Temporarily set highest priority
+//            if (starvedP->priority < 2) {
+//                starvedP->priority = 2;
+//            }
+//        }
+//
+//        // Normal priority scheduling
 //        for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
 //            if (p->state != RUNNABLE)
 //                continue;
 //
-//            if (highP == 0 || p->priority < highP->priority ||
-//                (p->priority == highP->priority && p->run_count < highP->run_count)) {
+//            if (!highP || p->priority < highP->priority) {
 //                highP = p;
 //            }
 //        }
 //
-//        if (highP != 0) {
-//            p = highP;
-//            p->run_count++;  // 실행 횟수 증가
-//
-//            c->proc = p;
-//            switchuvm(p);
-//            p->state = RUNNING;
-//            swtch(&(c->scheduler), p->context);
+//        if (highP) {
+//            highP->run_count++;
+//            c->proc = highP;
+//            switchuvm(highP);
+//            highP->state = RUNNING;
+//            swtch(&(c->scheduler), highP->context);
 //            switchkvm();
 //
 //            c->proc = 0;
+//
+//            // Reset the priority of the starved process after running
+//            if (starvedP) {
+//                starvedP->priority = 6; // Reset to initialized priority
+//            }
 //        }
+//
 //        release(&ptable.lock);
 //    }
 //}
+
+
 
 // Enter scheduler.  Must hold only ptable.lock
 // and have changed proc->state. Saves and restores
