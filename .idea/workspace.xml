@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated />
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e23599ad-7bbf-46d6-97c9-bf9daf75823f" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="assignment_3_v2" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;wonjaeyeon&quot;
+  }
+}</component>
+  <component name="GitToolBoxStore">
+    <option name="projectConfigVersion" value="5" />
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="master" />
+                    <option name="lastUsedInstant" value="1699952800" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="assignment_3_final" />
+                    <option name="lastUsedInstant" value="1699952097" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="assignment_3_v4" />
+                    <option name="lastUsedInstant" value="1699848510" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="assignment_2_final" />
+                    <option name="lastUsedInstant" value="1699847512" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="assignment_3_v3" />
+                    <option name="lastUsedInstant" value="1699610265" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
+  </component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="e28e884d-0db1-48db-ae4a-72ea8f59b934" />
+        <option name="url" value="https://github.com/wonjaeyeon/xv6-public.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
+  <component name="MacroExpansionManager">
+    <option name="directoryName" value="lt9cp55b" />
+  </component>
+  <component name="MakefileLocalSettings">
+    <option name="availableProjects">
+      <map>
+        <entry>
+          <key>
+            <ExternalProjectPojo>
+              <option name="name" value="xv6-public" />
+              <option name="path" value="$PROJECT_DIR$" />
+            </ExternalProjectPojo>
+          </key>
+          <value>
+            <list>
+              <ExternalProjectPojo>
+                <option name="name" value="xv6-public" />
+                <option name="path" value="$PROJECT_DIR$" />
+              </ExternalProjectPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="projectSyncType">
+      <map>
+        <entry key="$PROJECT_DIR$" value="RE_IMPORT" />
+      </map>
+    </option>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2023" />
+    <option name="minorVersion" value="2.1" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2VIA0LW47qtQY5uDS7WrQkCwv43" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/wonjaeyeon/CLionProjects/xv6-public&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Makefile Target.entryother">
+    <configuration name="entryother" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="entryother" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <configuration name="initcode" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="initcode" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Makefile Target.entryother" />
+        <item itemvalue="Makefile Target.initcode" />
+        <item itemvalue="Makefile Target.initcode" />
+        <item itemvalue="Makefile Target.entryother" />
+        <item itemvalue="Makefile Target.entryother" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e23599ad-7bbf-46d6-97c9-bf9daf75823f" name="Changes" comment="" />
+      <created>1694512997313</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1694512997313</updated>
+      <workItem from="1694512998774" duration="118000" />
+      <workItem from="1694530642801" duration="221000" />
+      <workItem from="1695003914872" duration="16000" />
+      <workItem from="1695137134394" duration="686000" />
+      <workItem from="1695228327175" duration="119000" />
+      <workItem from="1695228452905" duration="588000" />
+      <workItem from="1695464244841" duration="4000" />
+      <workItem from="1695464352504" duration="621000" />
+      <workItem from="1695464982141" duration="2010000" />
+      <workItem from="1695487383063" duration="8195000" />
+      <workItem from="1695568563612" duration="6193000" />
+      <workItem from="1695708609995" duration="80000" />
+      <workItem from="1696396515611" duration="39000" />
+      <workItem from="1696396563295" duration="8080000" />
+      <workItem from="1696578183452" duration="1250000" />
+      <workItem from="1696579443639" duration="12171000" />
+      <workItem from="1696765428856" duration="5948000" />
+      <workItem from="1697179757679" duration="25000" />
+      <workItem from="1697179791161" duration="24025000" />
+      <workItem from="1697352825828" duration="8370000" />
+      <workItem from="1697371646577" duration="1424000" />
+      <workItem from="1697373841479" duration="6827000" />
+      <workItem from="1697414204772" duration="15225000" />
+      <workItem from="1697545961251" duration="4000" />
+      <workItem from="1697638200669" duration="16264000" />
+      <workItem from="1699266110080" duration="21000" />
+      <workItem from="1699266138963" duration="4813000" />
+      <workItem from="1699280982913" duration="1167000" />
+      <workItem from="1699282507512" duration="101000" />
+      <workItem from="1699324240648" duration="621000" />
+      <workItem from="1699338200233" duration="6885000" />
+      <workItem from="1699362262930" duration="4988000" />
+      <workItem from="1699542144753" duration="34000" />
+      <workItem from="1699609044326" duration="21000" />
+      <workItem from="1699609073831" duration="6410000" />
+      <workItem from="1699625208790" duration="750000" />
+      <workItem from="1699627494044" duration="5362000" />
+      <workItem from="1699690043747" duration="66783000" />
+      <workItem from="1699952052349" duration="2211000" />
+    </task>
+    <task id="LOCAL-00001" summary="check if the branch is well made + setting up for running the file.">
+      <option name="closed" value="true" />
+      <created>1695465168923</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1695465168923</updated>
+    </task>
+    <task id="LOCAL-00002" summary="current work(~9/26)">
+      <option name="closed" value="true" />
+      <created>1695707484988</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1695707484988</updated>
+    </task>
+    <task id="LOCAL-00003" summary="current work(~10/8) - working good but still using fork() &amp; exec()">
+      <option name="closed" value="true" />
+      <created>1696772912362</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1696772912362</updated>
+    </task>
+    <task id="LOCAL-00004" summary="uploading current work(~10/13)">
+      <option name="closed" value="true" />
+      <created>1697184721492</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1697184721492</updated>
+    </task>
+    <task id="LOCAL-00005" summary="uploading current work(~10/14)">
+      <option name="closed" value="true" />
+      <created>1697276565555</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1697276565555</updated>
+    </task>
+    <task id="LOCAL-00006" summary="uploading current work(~10/15)">
+      <option name="closed" value="true" />
+      <created>1697371243026</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1697371243026</updated>
+    </task>
+    <task id="LOCAL-00007" summary="uploading current work(~10/15)">
+      <option name="closed" value="true" />
+      <created>1697371664824</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1697371664824</updated>
+    </task>
+    <task id="LOCAL-00008" summary="uploading current work(~11/7)">
+      <option name="closed" value="true" />
+      <created>1699339260820</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1699339260820</updated>
+    </task>
+    <task id="LOCAL-00009" summary="uploading current work(~11/7)">
+      <option name="closed" value="true" />
+      <created>1699339869564</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1699339869564</updated>
+    </task>
+    <task id="LOCAL-00010" summary="uploading current work(~11/7) - v2">
+      <option name="closed" value="true" />
+      <created>1699347255027</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1699347255027</updated>
+    </task>
+    <task id="LOCAL-00011" summary="uploading current work(~11/12)">
+      <option name="closed" value="true" />
+      <created>1699769240005</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1699769240005</updated>
+    </task>
+    <task id="LOCAL-00012" summary="uploading current work(~11/12) - v2">
+      <option name="closed" value="true" />
+      <created>1699792180268</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1699792180268</updated>
+    </task>
+    <task id="LOCAL-00013" summary="uploading current work(~11/13)">
+      <option name="closed" value="true" />
+      <created>1699847483464</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1699847483464</updated>
+    </task>
+    <task id="LOCAL-00014" summary="uploading current work(~11/14)">
+      <option name="closed" value="true" />
+      <created>1699940208922</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1699940208922</updated>
+    </task>
+    <task id="LOCAL-00015" summary="uploading current work(~11/14)-v2">
+      <option name="closed" value="true" />
+      <created>1699950113931</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1699950113931</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="check if the branch is well made + setting up for running the file." />
+    <MESSAGE value="current work(~9/26)" />
+    <MESSAGE value="current work(~10/8) - working good but still using fork() &amp; exec()" />
+    <MESSAGE value="uploading current work(~10/13)" />
+    <MESSAGE value="uploading current work(~10/14)" />
+    <MESSAGE value="uploading current work(~10/15)" />
+    <MESSAGE value="uploading current work(~11/7)" />
+    <MESSAGE value="uploading current work(~11/7) - v2" />
+    <MESSAGE value="uploading current work(~11/12)" />
+    <MESSAGE value="uploading current work(~11/12) - v2" />
+    <MESSAGE value="uploading current work(~11/13)" />
+    <MESSAGE value="uploading current work(~11/14)" />
+    <MESSAGE value="uploading current work(~11/14)-v2" />
+    <option name="LAST_COMMIT_MESSAGE" value="uploading current work(~11/14)-v2" />
+  </component>
+</project>
