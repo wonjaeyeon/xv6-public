@@ -24,3 +24,4 @@
 #define SYS_set_proc_priority 23
 #define SYS_get_proc_priority 24
 #define SYS_cps    25
+#define SYS_freemem 26

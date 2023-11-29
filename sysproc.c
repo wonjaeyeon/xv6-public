@@ -118,3 +118,9 @@ sys_cps(void)
 {
     return cps();
 }
+
+int
+sys_freemem(void)
+{
+    return freemem();
+}
