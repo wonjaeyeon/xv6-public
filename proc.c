@@ -193,7 +193,7 @@ fork(void) {
     if ((np = allocproc()) == 0) {
         return -1;
     }
-    /////////////////////////////
+
     // Copy process state from proc.
     // copy all the data from the parent process to the child process
     if ((np->pgdir = copyuvm(curproc->pgdir, curproc->sz)) == 0) {

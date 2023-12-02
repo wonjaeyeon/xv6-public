@@ -10,19 +10,13 @@
 #include "spinlock.h"
 
 uint num_free_pages; // declare num_free_pages
-//uint pgrefcount[PHYSTOP >> PGSHIFT]; // declare pgrefcount
+uint pgrefcount[PHYSTOP >> PGSHIFT]; // declare pgrefcount
 
 void freerange(void *vstart, void *vend);
 
 extern char end[]; // first address after kernel loaded from ELF file
 // defined by the kernel linker script in kernel.ld
 
-struct {
-    struct spinlock lock;
-    int use_lock;
-    int numfreepages;
-    uint pgrefcount[PHYSTOP >> PGSHIFT];
-} pmem;
 
 struct run {
     struct run *next;
@@ -41,95 +35,68 @@ struct {
 // after installing a full page table that maps them on all cores.
 void
 kinit1(void *vstart, void *vend) {
-    initlock(&pmem.lock, "pmemlock");
-    pmem.use_lock = 0;
     initlock(&kmem.lock, "kmem");
     kmem.use_lock = 0;
+    num_free_pages = 0;
     freerange(vstart, vend);
 }
 
 void
 kinit2(void *vstart, void *vend) {
-    pmem.use_lock = 1;
-    memset(&pmem.pgrefcount, 0, sizeof(uint) * (PHYSTOP >> PGSHIFT));
-    acquire(&pmem.lock);
-    pmem.numfreepages = 0;
-    release(&pmem.lock);
+    //memset(pgrefcount, 0, sizeof(uint) * (PHYSTOP >> PGSHIFT));
+    //acquire(&pmem.lock);
+    //release(&pmem.lock);
     freerange(vstart, vend);
     kmem.use_lock = 1;
 }
 
-void free_page(char *v) {
-    struct run *r;
-
-    if((uint)v % PGSIZE || v < end || V2P(v) >= PHYSTOP)
-        panic("free_page");
-
-    // Fill with junk to catch dangling refs.
-    memset(v, 1, PGSIZE);
-
-    if(kmem.use_lock)
-        acquire(&kmem.lock);
-
-    r = (struct run*)v;
-    r->next = kmem.freelist;
-    kmem.freelist = r;
-
-    if(kmem.use_lock)
-        release(&kmem.lock);
-}
 
 void
 freerange(void *vstart, void *vend) {
     char *p;
     p = (char *) PGROUNDUP((uint) vstart);
+    memset(&pgrefcount, 0, sizeof(uint) * (PHYSTOP >> PGSHIFT)); // initialize pgrefcount array to 0
     for (; p + PGSIZE <= (char *) vend; p += PGSIZE)
         kfree(p);
 }
 
-int freemem()
+int
+freemem()
 {
-    int numfreepages;
-    acquire(&pmem.lock);
-    numfreepages = pmem.numfreepages;
-    release(&pmem.lock);
-    return numfreepages;
+    return num_free_pages;
 }
 
 uint
-get_ref(uint pa)
+get_refcount(uint pa)
 {
     if (pa >= PHYSTOP)
     {
-        cprintf("pa >= PHYSTOP");
+        cprintf("pa is over PHYSTOP(pa >= PHYSTOP)");
     }
 
-    return pmem.pgrefcount[pa >> PGSHIFT];
-
+    return pgrefcount[pa >> PGSHIFT];
 }
 
 void
-inc_ref(uint pa)
+inc_refcount(uint pa)
 {
     if (pa >= PHYSTOP)
     {
-        cprintf("pa >= PHYSTOP");
+        cprintf("pa is over PHYSTOP(pa >= PHYSTOP)");
     }
 
-    pmem.pgrefcount[pa >> PGSHIFT]++;
-
+    pgrefcount[pa >> PGSHIFT]++;
 }
 
 void
-dec_ref(uint pa)
+dec_refcount(uint pa)
 {
-
     if (pa >= PHYSTOP)
     {
-        cprintf("pa >= PHYSTOP");
+        cprintf("pa is over PHYSTOP(pa >= PHYSTOP)");
     }
 
-    pmem.pgrefcount[pa >> PGSHIFT]--;
+    pgrefcount[pa >> PGSHIFT]--;
 }
 
 //PAGEBREAK: 21
@@ -150,25 +117,22 @@ kfree(char *v)
 
     uint pa = V2P(v);
 
-    // ref_count 가 0보다 크면 공유하고있는 페이지가 있는것이므로
-    // ref_count --;
-    if (pmem.pgrefcount[pa >> PGSHIFT] > 0)
-        pmem.pgrefcount[pa >> PGSHIFT]--;
+    // if ref_count is greater than 0, then there is a process that shares the page
+    // so the ref_count is decremented.
+    if (pgrefcount[pa >> PGSHIFT] > 0)
+        dec_refcount(pa);
 
-    // ref_count 가 0보다 작거나 같으면 해당 페이지를 공유하는 프로세스가 없으므로
-    // 할당 해제해주고 freelist에 추가시킴.
-    if (pmem.pgrefcount[pa >> PGSHIFT] <= 0) {
+    // if ref_count is 0, then there is no process that shares the page
+    // so the page is added to the freelist
+    if (pgrefcount[pa >> PGSHIFT] <= 0) {
 
         memset(v, 1, PGSIZE);
         r->next = kmem.freelist;
-        pmem.numfreepages++;
+        num_free_pages++;
         kmem.freelist = r;
-
-
     }
-
-
 }
+
 // Allocate one 4096-byte page of physical memory.
 // Returns a pointer that the kernel can use.
 // Returns 0 if the memory cannot be allocated.
@@ -184,12 +148,11 @@ kalloc(void)
     if(r){
         kmem.freelist = r->next;
         uint address = V2P((uint)r);
-        pmem.numfreepages--;
-        pmem.pgrefcount[address >> PGSHIFT]++;
+        num_free_pages--;
+        pgrefcount[address >> PGSHIFT]=1;
     }
     if(kmem.use_lock)
         release(&kmem.lock);
 
     return (char*)r;
 }
-

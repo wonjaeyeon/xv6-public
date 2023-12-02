@@ -310,41 +310,9 @@ clearpteu(pde_t *pgdir, char *uva)
   *pte &= ~PTE_U;
 }
 
-// Given a parent process's page table, create a copy
-// of it for a child.
-//pde_t*
-//copyuvm(pde_t *pgdir, uint sz)
-//{
-//  pde_t *d;
-//  pte_t *pte;
-//  uint pa, i, flags;
-//  char *mem;
-//
-//  if((d = setupkvm()) == 0)
-//    return 0;
-//  for(i = 0; i < sz; i += PGSIZE){
-//    if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
-//      panic("copyuvm: pte should exist");
-//    if(!(*pte & PTE_P))
-//      panic("copyuvm: page not present");
-//    pa = PTE_ADDR(*pte);
-//    flags = PTE_FLAGS(*pte);
-//    if((mem = kalloc()) == 0)
-//      goto bad;
-//    memmove(mem, (char*)P2V(pa), PGSIZE);
-//    if(mappages(d, (void*)i, PGSIZE, V2P(mem), flags) < 0) {
-//      kfree(mem);
-//      goto bad;
-//    }
-//  }
-//  return d;
-//
-//bad:
-//  freevm(d);
-//  return 0;
-//}
-// Given a parent process's page table, create a copy
-// of it for a child.
+// Revised version of copyuvm
+// child's process share the VM with parent's process and don't have write permission
+// implemented by copy-on-write
 pde_t*
 copyuvm(pde_t *pgdir, uint sz)
 {
@@ -361,15 +329,18 @@ copyuvm(pde_t *pgdir, uint sz)
             panic("copyuvm: page not present");
         pa = PTE_ADDR(*pte);
 
+        // child process don't have write permission
         *pte = *pte & ~PTE_W;
         flags = PTE_FLAGS(*pte);
 
 
+        // memmove(mem, (char*)P2V(pa), PGSIZE); is erased because of cow(copy on write)
+
         if (mappages(d, (void*)i, PGSIZE, pa, flags) < 0)
             goto bad;
         // ref_count ++;
-        inc_ref(pa);;
-        //TLB flash
+        inc_refcount(pa);
+        //initialize the TLB
         lcr3(V2P(pgdir));
 
     }
@@ -435,18 +406,18 @@ page_fault(void)
     pa = PTE_ADDR(*pte);
 
     // copy-on-write
-    if(get_ref(pa) == 1){
-        //해당 페이지에 접근하는 프로세스가 하나밖에 없을때는 해당 페이지에
-        //write하도록 허용. 굳이 cow를 하여 새로운 페이지를 할당받아 쓸 필요 없음.
+    if(get_refcount(pa) == 1){
+        // if page is shared by only one process, allow write permission
+        // no need to allocate new page and copy
         *pte |= PTE_W;
 
     }
     else{
         if ((mem = kalloc()) == 0)
             panic("kalloc err");
-        dec_ref(pa);
+        dec_refcount(pa);
         memmove(mem, (char*)P2V(pa), PGSIZE);
-        // 공유되는 페이지에는 W권한을 없애줌.
+        // delete write permission on shared page
         *pte = (V2P(mem) |  PTE_U  | PTE_P) & (~PTE_W);
     }
 

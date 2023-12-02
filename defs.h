@@ -71,9 +71,9 @@ void            kinit2(void*, void*);
 // added functions
 void			pmem_init(void);
 int				freemem();
-uint		    get_ref(uint pa);
-void			inc_ref(uint pa);
-void			dec_ref(uint pa);
+uint		    get_refcount(uint pa);
+void			inc_refcount(uint pa);
+void			dec_refcount(uint pa);
 
 // kbd.c
 void            kbdintr(void);
