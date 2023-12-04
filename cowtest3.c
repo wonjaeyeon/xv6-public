@@ -6,7 +6,7 @@
 
 int main(int argc, char **argv) {
     char *buffer;
-    int before, after;
+    int bef_free_mem, aft_free_mem;
     int pid;
 
     buffer = malloc(BUFFER_SIZE);
@@ -25,20 +25,20 @@ int main(int argc, char **argv) {
     pid = fork();
     if (pid == 0) {
         // Child process
-        before = freemem();
+        bef_free_mem = freemem();
 
         // Modify part of the buffer
         for (int i = 0; i < BUFFER_SIZE; i++) {
             buffer[i] = 'b';
         }
 
-        after = freemem();
+        aft_free_mem = freemem();
 
         // Compare memory usage
-        if (before != after) {
-            printf(1, "PASS : Memory usage changed\n");
+        if (bef_free_mem != aft_free_mem) {
+            printf(1, "PASS : Memory usage changed after write\n");
         } else {
-            printf(1, "FAIL : Memory usage unchanged\n");
+            printf(1, "FAIL : Memory usage unchanged after write\n");
         }
 
         free(buffer);

@@ -1,29 +1,31 @@
 #include "types.h"
 #include "stat.h"
 #include "user.h"
+#define META_DATA_SIZE 68 // 68 bytes for meta data size
 
 int
-main(int argc, char **argv)
-{
-	int before, after;
-	int pid;
+main(int argc, char **argv) {
+    int before_fork_mem, after_fork_mem;
+    int pid;
 
-	printf(1, "TEST1: ");
-	
-	before = freemem();
+    printf(1, "TEST1: ");
 
-	pid = fork();
-	if(pid == 0){
-		after = freemem();
-		if(before - after == 68)
-			printf(1, "OK\n");
-		else
-			printf(1, "WRONG\n");
-		exit();
-	}
-	else{
-		wait();
-	}
+    before_fork_mem = freemem();
 
-	exit();
+    pid = fork();
+    if (pid < 0) {
+        // fork failed
+        printf(1, "fork failed\n");
+        exit();
+    } else if (pid == 0) {
+        after_fork_mem = freemem();
+        if (before_fork_mem - after_fork_mem == META_DATA_SIZE) {
+            printf(1, "PASS : Only Used Memory in Meta Data\n");
+        } else
+            printf(1, "FAIL : Used Memory out of Meta Data Size\n");
+        exit();
+    } else {
+        wait();
+    }
+    exit();
 }

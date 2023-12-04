@@ -2,29 +2,38 @@
 #include "stat.h"
 #include "user.h"
 
-int
-main(int argc, char **argv)
-{
-	int before, after;
-	int pid;
+int main() {
+    int before_fork_mem, after_fork_mem;
+    int pid;
 
-	printf(1, "TEST2: ");
-	
-	before = freemem();
+    printf(1, "TEST2: ");
 
-	pid = fork();
-	if(pid == 0){
-		exit();
-	}
-	else{
-		wait();
-	}
+    // check memory usage before fork()
+    before_fork_mem = freemem();
 
-	after = freemem();
-	if(before == after)
-		printf(1, "OK\n");
-	else
-		printf(1, "WRONG\n");
+    // call fork() for CoW test
+    pid = fork();
+    if (pid < 0) {
+        // fork failed
+        printf(1, "fork failed\n");
+        exit();
+    } else if (pid == 0) {
+        // child process: exit
+        exit();
+    } else {
+        // parent process: wait for child
+        wait();
 
-	exit();
+        // check memory usage after fork()
+        after_fork_mem = freemem();
+
+        // compare memory usage
+        if (before_fork_mem == after_fork_mem) {
+            printf(1, "PASS : Memory usage unchanged after fork()\n");
+        } else {
+            printf(1, "FAIL : Memory usage changed after fork()\n");
+        }
+    }
+
+    exit();
 }
